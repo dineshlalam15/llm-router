@@ -1,4 +1,7 @@
-#Project Structure 
+## Concept of the Router: 
+A genuine Machine Learning classification system (TF-IDF + Logistic Regression). It dynamically routes user queries to the optimal LLM provider based on learned textual patterns.
+
+## Project Structure 
 llm-router/
 ├── app/
 │   ├── __init__.py
