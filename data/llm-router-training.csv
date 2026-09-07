@@ -1,0 +1,121 @@
+query,provider
+"Create a campaign summary from this report.",openai
+"Generate five variations of this email subject line.",openai
+"Draft a quick response to a customer asking about pricing.",openai
+"Format this JSON data into a readable HTML table.",openai
+"Write a Python script to parse a CSV file.",openai
+"Translate this short marketing copy into French.",openai
+"Extract the names and emails from this text block.",openai
+"Write a SQL query to select all active users.",openai
+"Create a catchy tagline for a new sneaker launch.",openai
+"Summarize the key points of this short meeting transcript.",openai
+"Draft a standardized welcome email for new subscribers.",openai
+"Give me 5 synonyms for the word 'innovative'.",openai
+"Write a regex to match North American phone numbers.",openai
+"Convert this list of features into bullet points.",openai
+"What is the capital of Australia?",openai
+"Generate a generic privacy policy template.",openai
+"Write a quick bash script to move files by extension.",openai
+"Identify the sentiment of this short tweet.",openai
+"Categorize this list of expenses into standard accounting buckets.",openai
+"Draft a quick apology note for a delayed shipment.",openai
+"Create a marketing strategy for a SaaS product.",openai
+"Format these raw notes into a structured daily update.",openai
+"Write a simple CSS flexbox layout for a navigation bar.",openai
+"Generate a standard NDA document template.",openai
+"Rewrite this sentence to be more polite.",openai
+"Provide a quick summary of the Agile methodology.",openai
+"Suggest a few domain name ideas for a tech blog.",openai
+"Create a simple packing list for a weekend trip.",openai
+"Write a short bio for a graphic designer.",openai
+"Draft a basic invoice template.",openai
+"Review this 50-page technical architecture document and identify risks.",claude
+"Analyze the root causes of the conversion drop spanning these three quarterly reports.",claude
+"Refactor this entire multi-file FastAPI application for better modularity.",claude
+"Read this entire 10k word product documentation and outline the missing edge cases.",claude
+"Compare the strategic differences between our Q1 and Q2 marketing campaigns based on these massive logs.",claude
+"Explain why this complex asynchronous Python function is causing a race condition.",claude
+"Plan a highly detailed multi-step migration from monolithic AWS EC2 to Kubernetes.",claude
+"Analyze this deep multi-step logic puzzle and walk me through the solution.",claude
+"Review this extensive legal contract and summarize the liability clauses.",claude
+"Evaluate the security implications of this custom authentication flow.",claude
+"Draft a comprehensive 30-page whitepaper on AI in marketing.",claude
+"Analyze the strategic alignment between these 5 different company mission statements.",claude
+"Debug this complex multi-threaded Java application.",claude
+"Synthesize these 20 user interviews into a detailed UX research report.",claude
+"Evaluate the pros and cons of microservices vs monolithic architecture for our specific use case.",claude
+"Read this entire book chapter and provide a critical analysis.",claude
+"Design a complex database schema for an e-commerce platform with multi-tenant support.",claude
+"Write a detailed project proposal for a new enterprise software solution.",claude
+"Analyze this detailed financial report and project next year's earnings.",claude
+"Explain the philosophical arguments for and against determinism.",claude
+"Review this extensive codebase and suggest performance optimizations.",claude
+"Draft a comprehensive disaster recovery plan for a cloud-based infrastructure.",claude
+"Analyze the narrative structure of this novel.",claude
+"Develop a detailed curriculum for a 12-week coding bootcamp.",claude
+"Evaluate the ethical implications of using AI in healthcare.",claude
+"Write a highly nuanced essay on the impact of social media on political discourse.",claude
+"Analyze the competitive landscape of the electric vehicle market.",claude
+"Design a scalable data pipeline for processing terabytes of log data.",claude
+"Critique this academic paper on quantum computing.",claude
+"Develop a comprehensive onboarding program for new engineering hires.",claude
+"Analyze this marketing image and tell me if the contrast meets accessibility standards.",gemini
+"Interpret this scatter plot chart and summarize the outliers.",gemini
+"Look at this screenshot of our campaign dashboard and tell me which metric is underperforming.",gemini
+"Extract insights from this uploaded PDF presentation deck.",gemini
+"Describe the emotional tone conveyed in this advertisement photograph.",gemini
+"Analyze this video frame and identify the objects in the background.",gemini
+"Read the text embedded in this infographic.",gemini
+"Compare these two architectural blueprints.",gemini
+"Identify the brand logos present in this event photograph.",gemini
+"Analyze this audio waveform and describe the noise profile.",gemini
+"Explain the diagram showing the water cycle.",gemini
+"What breed of dog is in this picture?",gemini
+"Analyze this heat map of user clicks on our website.",gemini
+"Transcribe the handwritten notes from this image.",gemini
+"Describe the fashion style in this lookbook photo.",gemini
+"Identify the plant species in this photograph.",gemini
+"Analyze this user interface mockup and suggest improvements.",gemini
+"Extract the table data from this scanned invoice.",gemini
+"Describe the weather conditions shown in this satellite image.",gemini
+"Identify the landmarks visible in this skyline photo.",gemini
+"Analyze this medical X-ray and highlight any anomalies.",gemini
+"Describe the action happening in this sports photograph.",gemini
+"Read the nutritional information from this food label image.",gemini
+"Analyze this stock chart and identify the trend.",gemini
+"Identify the musical instruments in this orchestra photo.",gemini
+"Describe the architectural style of this building.",gemini
+"Analyze this comic strip and explain the joke.",gemini
+"Extract the text from this ancient manuscript image.",gemini
+"Describe the ingredients shown in this recipe video.",gemini
+"Identify the car model in this photograph.",gemini
+"Route this request through the configured LLM gateway.",litellm
+"Use our configured model abstraction layer to handle this prompt.",litellm
+"Call the default provider through the unified LLM interface.",litellm
+"Send this query to the organization's model gateway.",litellm
+"Process this input using the centrally managed LLM proxy.",litellm
+"Forward this text to the abstract routing layer.",litellm
+"Execute this completion via the enterprise model hub.",litellm
+"Use the system's dynamic LLM router to answer this.",litellm
+"Pass this prompt to the unified inference endpoint.",litellm
+"Handle this request via the abstract model connector.",litellm
+"Route this through our internal LLM load balancer.",litellm
+"Use the organization's default model gateway for this request.",litellm
+"Process this via the central LLM API management layer.",litellm
+"Send this to the configured fallback model.",litellm
+"Execute this using the cost-optimized routing strategy.",litellm
+"Forward this to the latency-optimized model endpoint.",litellm
+"Use the unified API gateway to process this.",litellm
+"Route this through the enterprise model registry.",litellm
+"Handle this via the abstract inference layer.",litellm
+"Send this to the standard organizational LLM endpoint.",litellm
+"Process this using the dynamic model selector.",litellm
+"Forward this to the central LLM proxy service.",litellm
+"Use the organization's managed model interface.",litellm
+"Route this through the load-balanced model cluster.",litellm
+"Execute this via the unified LLM connector.",litellm
+"Send this to the abstract AI gateway.",litellm
+"Process this using the enterprise model router.",litellm
+"Forward this to the configured LLM endpoint.",litellm
+"Use the unified inference API for this request.",litellm
+"Route this through the central AI management platform.",litellm
