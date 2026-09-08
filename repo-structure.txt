@@ -4,13 +4,6 @@ llm-router/
 │   ├── main.py
 │   ├── router.py
 │   ├── model_loader.py
-│   └── providers/
-│       ├── __init__.py
-│       ├── base.py
-│       ├── openai_provider.py
-│       ├── claude_provider.py
-│       ├── gemini_provider.py
-│       └── litellm_provider.py
 ├── contracts/
 │   ├── schemas.py
 ├── data/
@@ -22,7 +15,6 @@ llm-router/
 │   └── test_api.py
 ├── train.py
 ├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml
+├── .env
 ├── .env.example
 └── README.md

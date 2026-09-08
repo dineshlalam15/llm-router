@@ -1,0 +1,36 @@
+# Secrets & Environment Variables
+.env
+.env.*
+!.env.example
+
+# Machine Learning Artifacts
+model/
+*.joblib
+*.pkl
+*.h5
+*.onnx
+
+# Python Standard Ignores
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+env/
+.venv/
+.env_python/
+
+# pytest coverage and cache
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+*.log

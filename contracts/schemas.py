@@ -7,3 +7,6 @@ class RouteRequest(BaseModel):
 class RouteResponse(BaseModel):
     query: str
     provider: str
+    confidence: float
+    probabilities: Dict[str, float]
+    fallback_triggered: bool
