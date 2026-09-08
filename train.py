@@ -28,7 +28,7 @@ def fetch_top_features(model, vectorizer, n=5):
     """
     feature_names = vectorizer.get_feature_names_out()
     classes = model.classes_ 
-    for i, element in classes:
+    for i, element in enumerate(classes):
         top_weights = np.argsort(model.coef_[i][-n:])
         for j in top_weights:
             top_features = [feature_names[j], model.coef_[i][j]] 
@@ -58,7 +58,7 @@ def main():
 
     vectorizer = TfidfVectorizer(ngram_range=(1,2), max_features=5000)
     x_train_vector = vectorizer.fit_transform(x_train)
-    x_test_vector = vectorizer.fit_transform(x_test)
+    x_test_vector = vectorizer.transform(x_test)
 
     print("Training our model...")
     model = LogisticRegression(max_iter=1000, random_state=42, class_weight='balanced')
@@ -67,7 +67,7 @@ def main():
     print("\nEvaluating Model...")
     y_pred = model.predict(x_test_vector)
 
-    print("Accuracy Score: {accuracy_score(y_test, y_pred):.4f}")
+    print(f"Accuracy Score: {accuracy_score(y_test, y_pred):.4f}")
     print(classification_report(y_test,y_pred))
 
     print("Confusion Matrix")
