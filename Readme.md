@@ -7,7 +7,6 @@ llm-router/
 │   ├── __init__.py
 │   ├── main.py
 │   ├── router.py
-│   ├── schemas.py
 │   ├── model_loader.py
 │   └── providers/
 │       ├── __init__.py
@@ -16,6 +15,8 @@ llm-router/
 │       ├── claude_provider.py
 │       ├── gemini_provider.py
 │       └── litellm_provider.py
+├── contracts/
+│   ├── schemas.py
 ├── data/
 │   ├── llm_router_training.csv
 │   └── test_queries.csv
