@@ -3,8 +3,8 @@ from .model_loader import router_ml
 from contracts.schemas import RouteResponse
 from train import clean_text
 
-CONFIDENCE_THRESHOLD=os.getenv("CONFIDENCE_THRESHOLD")
-FALLBACK_PROVIDER=os.getenv("FALLBACK_PROVIDER")
+CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.60"))
+FALLBACK_PROVIDER = os.getenv("FALLBACK_PROVIDER", "litellm")
 
 PROVIDER_API_KEYS = {
     "openai": "OPENAI_API_KEY",
@@ -29,8 +29,8 @@ def validate_provider(provider_name: str) -> bool:
 
 
 def predict_provider(query: str) -> RouteResponse:
-    if not router_ml.model or router_ml.vectorizer:
-        return RuntimeError("Model NOT LOADED")
+    if router_ml.model is None or router_ml.vectorizer is None:
+        raise RuntimeError(f"Model is {type(router_ml.model)}, Vectorizer is {type(router_ml.vectorizer)}")
     query_clean = clean_text(query)
     x_vec = router_ml.vectorizer.transform([query_clean])
     probabilities = router_ml.model.predict_proba(x_vec)[0]

@@ -30,12 +30,12 @@ def fetch_top_features(model, vectorizer, n=5):
     classes = model.classes_ 
     for i, element in enumerate(classes):
         top_weights = np.argsort(model.coef_[i][-n:])
-        for j in top_weights:
-            top_features = [feature_names[j], model.coef_[i][j]] 
-            print(f"\nProvider: {element.upper()}")
-            for feature, weight in top_features:
-                print(f"  + {feature}: {weight:.4f}")
-            
+        top_features = [(feature_names[j], float(model.coef_[i][j])) for j in top_weights]
+        print(f"\nProvider: {element.upper()}")
+        for feature, weight in reversed(top_features):
+            print(f"  + {feature}: {weight:.4f}")
+    print("=" * 50 + "\n")
+
 
 def main():
     print("Loading Dataset...")
