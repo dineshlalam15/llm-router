@@ -1,5 +1,5 @@
 import argparse
-from llm_router.data.generator import generate_routing_data
+from router_engine.data.generator import generate_routing_data
 # from llm_router.training.trainer import train_models (Trainer logic merges embedding and model.fit)
 
 def main():
@@ -20,7 +20,7 @@ def main():
         print("Training models... (Executes SentenceTransformer encoding -> SVM.fit() -> KNN.fit() -> joblib.dump())")
         # train_models()
     elif args.command == "route":
-        from llm_router.routing.engine import DynamicRouter
+        from router_engine.routing.engine import DynamicRouter
         router = DynamicRouter()
         print(router.route(args.query))
 

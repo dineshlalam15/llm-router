@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from contracts.schemas import RouteRequest, RouteResponse
+from router_engine.contracts.schemas import RouteRequest, RouteResponse
 from .router import predict_provider
 
 app = FastAPI(title="ML based LLM Router API")

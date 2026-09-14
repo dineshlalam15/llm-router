@@ -1,8 +1,8 @@
 import os
 import yaml
-from llm_router.models.embeddings import Embedder
-from llm_router.models.svm_router import SVMRouter
-from llm_router.models.knn_router import KNNRouter
+from router_engine.models.embeddings import Embedder
+from router_engine.models.svm_router import SVMRouter
+from router_engine.models.knn_router import KNNRouter
 
 class DynamicRouter:
     def __init__(self, config_path="configs/router.yaml"):

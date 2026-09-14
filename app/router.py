@@ -1,7 +1,7 @@
 import os
 from .model_loader import router_ml
-from contracts.schemas import RouteResponse
-from models.logistic_regression import clean_text
+from router_engine.contracts.schemas import RouteResponse
+from router_engine.models.logistic_regression import clean_text
 
 CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.60"))
 FALLBACK_PROVIDER = os.getenv("FALLBACK_PROVIDER", "litellm")
