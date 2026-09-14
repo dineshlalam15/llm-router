@@ -1,21 +1,33 @@
-llm_router/
+llm-router/                 <--- Outer Workspace Directory
+├── app/
+│   ├── main.py                 # FastAPI application and routing endpoints
+│   ├── router.py               # Connects FastAPI to the ML routing engine (SVM -> KNN)
+│   ├── schemas.py              # Pydantic models for request/response validation
+│   └── model_loader.py         # Handles loading of persisted joblib models and embeddings
 ├── configs/
-│   ├── datasets.yaml
-│   └── router.yaml
-├── llm_router/
-│   ├── data/
-│   │   ├── registry.py        # Dataset adapters
-│   │   └── generator.py       # Downloads, normalizes, assigns labels
-│   ├── models/
-│   │   ├── embeddings.py      # Sentence Transformers
-│   │   ├── svm_router.py
-│   │   └── knn_router.py
-│   ├── routing/
-│   │   └── engine.py          # Decision logic (SVM -> KNN -> Fallback)
-│   ├── cli.py                 # CLI entry points
-│   └── app.py                 # FastAPI integration
+│   ├── datasets.yaml           # Automated Hugging Face ingestion and filtering configurations
+│   └── router.yaml             # Hyperparameters for SentenceTransformers, SVM, KNN, and thresholds
 ├── data/
-│   ├── cache/                 # Raw HF downloads
-│   └── processed/             # Final routing.jsonl
-├── models_out/                # Persisted .joblib files
-└── requirements.txt
+│   ├── cache/                  # Downloaded raw datasets from public sources (e.g., Hugging Face)
+│   └── processed/              # Evaluated and formatted routing_dataset.jsonl
+├── router_engine/          <--- Inner Package Directory 
+│   ├── data/
+│   │   ├── registry.py         # Dataset adapters for normalization and ingestion
+│   │   └── generator.py        # Simulates API evaluation to generate routing labels
+│   ├── models/
+│   │   ├── embeddings.py       # SentenceTransformer (all-MiniLM-L6-v2) integration
+│   │   ├── svm_router.py       # SVM classifier implementation (Primary Router)
+│   │   └── knn_router.py       # KNN classifier implementation (Fallback Router)
+│   ├── routing/
+│   │   └── engine.py           # Core decision logic (Embeddings -> SVM -> Confidence Check -> KNN)
+│   └── cli.py                  # Command-line interface for the pipeline
+├── models_out/
+│   ├── svm.joblib              # Persisted SVM model weights
+│   └── knn.joblib              # Persisted KNN index
+├── tests/
+│   ├── test_router.py
+│   └── test_api.py
+├── requirements.txt
+├── .env.example
+├── .gitignore
+└── README.md
