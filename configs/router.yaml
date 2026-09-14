@@ -1,0 +1,17 @@
+embedding:
+  model_name: "sentence-transformers/all-MiniLM-L6-v2"
+
+training:
+  svm_kernel: "rbf"
+  knn_neighbors: 5
+  test_size: 0.2
+  random_state: 42
+
+routing:
+  primary: "svm"
+  fallback_model: "knn"
+  confidence_threshold: 0.65
+  default_provider: "litellm"
+
+persistence:
+  model_dir: "models_out/"

@@ -1,0 +1,90 @@
+# Configuration for Automated Dataset Discovery, Ingestion, and Normalization
+
+pipeline_settings:
+  cache_dir: "data/cache"
+  output_routing_dataset: "data/processed/routing_dataset.jsonl"
+  train_ratio: 0.8
+  random_seed: 42
+  embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+
+# -------------------------------------------------------------------------
+# 80/20 Dataset Ingestion Mix:
+# 80% Domain-Specific Marketing / Business / Sentiment
+# 20% General Reasoning / Code / Math Anchors
+# -------------------------------------------------------------------------
+
+datasets:
+  # 1. Marketing Copy, Ad Briefs & Campaign Prompts
+  - name: "fka/awesome-chatgpt-prompts"
+    enabled: true
+    split: "train"
+    text_column: "prompt"
+    domain: "marketing_copywriting"
+    sample_size: 250
+    filter_keywords:
+      - "marketing"
+      - "advertis"
+      - "campaign"
+      - "brand"
+      - "copywriter"
+      - "social media"
+      - "seo"
+      - "content"
+      - "tagline"
+      - "email"
+
+  # 2. Customer Feedback, Tone & Sentiment Analysis
+  - name: "dair-ai/emotion"
+    enabled: true
+    split: "train"
+    text_column: "text"
+    domain: "customer_sentiment"
+    sample_size: 200
+    filter_keywords: []  # Ingest balanced random sample directly
+
+  # 3. Customer Service, E-commerce, Inquiries & Escalations
+  - name: "Kaludi/Customer-Support-Responses"
+    enabled: true
+    split: "train"
+    text_column: "query"
+    domain: "customer_support"
+    sample_size: 200
+    filter_keywords:
+      - "product"
+      - "order"
+      - "refund"
+      - "discount"
+      - "shipping"
+      - "price"
+      - "service"
+
+  # 4. Market Research, Business Analysis & Financial News
+  - name: "ag_news"
+    enabled: true
+    split: "train"
+    text_column: "text"
+    domain: "business_strategy"
+    sample_size: 250
+    # Category 2 in AG News represents Business
+    category_filter:
+      column: "label"
+      value: 2
+
+  # 5. Technical Utility & Marketing Automation Scripts (Anchor)
+  - name: "openai/openai_humaneval"
+    enabled: true
+    split: "test"
+    text_column: "prompt"
+    domain: "utility_coding"
+    sample_size: 60
+    filter_keywords: []
+
+  # 6. Quantitative Marketing Metrics / ROI Word Problems (Anchor)
+  - name: "openai/gsm8k"
+    config_name: "main"
+    enabled: true
+    split: "train"
+    text_column: "question"
+    domain: "metrics_reasoning"
+    sample_size: 60
+    filter_keywords: []

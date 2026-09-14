@@ -1,20 +1,21 @@
-llm-router/
-├── app/
-│   ├── __init__.py
-│   ├── main.py
-│   ├── router.py
-│   ├── model_loader.py
-├── contracts/
-│   ├── schemas.py
+llm_router/
+├── configs/
+│   ├── datasets.yaml
+│   └── router.yaml
+├── llm_router/
+│   ├── data/
+│   │   ├── registry.py        # Dataset adapters
+│   │   └── generator.py       # Downloads, normalizes, assigns labels
+│   ├── models/
+│   │   ├── embeddings.py      # Sentence Transformers
+│   │   ├── svm_router.py
+│   │   └── knn_router.py
+│   ├── routing/
+│   │   └── engine.py          # Decision logic (SVM -> KNN -> Fallback)
+│   ├── cli.py                 # CLI entry points
+│   └── app.py                 # FastAPI integration
 ├── data/
-│   ├── llm_router_training.csv
-│   └── test_queries.csv
-├── model/ (Generated during training)
-├── tests/
-│   ├── test_router.py
-│   └── test_api.py
-├── train.py
-├── requirements.txt
-├── .env
-├── .env.example
-└── README.md
+│   ├── cache/                 # Raw HF downloads
+│   └── processed/             # Final routing.jsonl
+├── models_out/                # Persisted .joblib files
+└── requirements.txt
