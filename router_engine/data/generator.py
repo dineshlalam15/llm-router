@@ -9,18 +9,18 @@ def load_yaml(path: str) -> dict:
         return yaml.safe_load(f)
 
 def simulate_llm_evaluation(sample: NormalizedSample) -> str:
-    """
-    Simulates the benchmark evaluation step.
-    Assigns routing ground-truth labels based on domain characteristics.
-    """
     query_lower = sample.query.lower()
     
-    if sample.domain == "customer_sentiment" or "short" in query_lower:
-        return "openai"
-    elif len(query_lower) > 200 or "strategy" in query_lower or "analyze" in query_lower:
-        return "claude"
-    elif "image" in query_lower or "visual" in query_lower or "dashboard" in query_lower:
+    # 1. Multimodal / Visual / Analytics / Charts -> Gemini
+    if any(k in query_lower for k in ["image", "visual", "dashboard", "chart", "graph", "trend", "report", "metric"]):
         return "gemini"
+    # 2. Fast / Short / Customer Sentiment -> OpenAI
+    elif sample.domain in ["customer_sentiment", "customer_support"] or len(query_lower) < 80:
+        return "openai"
+    # 3. Long Context / Deep Strategy / Reasoning -> Claude
+    elif len(query_lower) > 200 or any(k in query_lower for k in ["strategy", "analyze", "campaign", "repositioning"]):
+        return "claude"
+    # 4. Fallback -> LiteLLM
     else:
         return "litellm"
 
