@@ -1,7 +1,7 @@
 import os
 import joblib
 import numpy as np
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Union
 from sklearn.neighbors import KNeighborsClassifier
 
 class KNNRouter:
@@ -22,12 +22,12 @@ class KNNRouter:
             metric=self.metric
         )
 
-    def train(self, X: np.ndarray | List[List[float]], y: List[str]):
+    def train(self, X: Union[np.ndarray, List[List[float]]], y: List[str]):
         """Fits the KNN index on dense embeddings and provider labels."""
         X_mat = np.array(X)
         self.model.fit(X_mat, y)
 
-    def predict(self, query_embedding: np.ndarray | List[float]) -> Tuple[str, float, Dict[str, float]]:
+    def predict(self, query_embedding: Union[np.ndarray, List[float]]) -> Tuple[str, float, Dict[str, float]]:
         """
         Predicts the optimal provider, confidence, and class probabilities for a query vector.
         
@@ -50,7 +50,8 @@ class KNNRouter:
 
         return predicted_provider, confidence, prob_dict
 
-    def find_nearest_examples(self, query_embedding: np.ndarray | List[float], k: int = 3) -> List[Dict[str, Any]]:
+    def find_nearest_examples(self, query_embedding: Union[np.ndarray, List[float]], k: int = 3) -> List[Dict[str, Any]]:
+        """Retrieves nearest neighbor distances and metadata."""
         """
         Helper method to retrieve the K most similar historical queries
         and their distances for explainability and inspection.

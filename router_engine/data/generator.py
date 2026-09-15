@@ -1,45 +1,58 @@
+import os
 import json
 import yaml
+from typing import List
 from .registry import DatasetRegistry, NormalizedSample
 
-def load_yaml(path: str):
-    with open(path, 'r') as f:
+def load_yaml(path: str) -> dict:
+    with open(path, 'r', encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 def simulate_llm_evaluation(sample: NormalizedSample) -> str:
     """
-    Simulates the ULab api_calling_evaluation.py step. 
-    In production, this would fire parallel API calls to OpenAI, Claude, etc., 
-    calculate Quality/Cost/Latency, and return the winner.
+    Simulates the benchmark evaluation step.
+    Assigns routing ground-truth labels based on domain characteristics.
     """
     query_lower = sample.query.lower()
     
-    # Heuristic simulation for label generation
     if sample.domain == "customer_sentiment" or "short" in query_lower:
-        return "openai" # Fast, cheap categorization
+        return "openai"
     elif len(query_lower) > 200 or "strategy" in query_lower or "analyze" in query_lower:
-        return "claude" # Complex reasoning / long context
+        return "claude"
     elif "image" in query_lower or "visual" in query_lower or "dashboard" in query_lower:
-        return "gemini" # Multimodal
+        return "gemini"
     else:
-        return "litellm" # Abstract fallback
+        return "litellm"
 
-def generate_routing_data(config_path: str = "configs/datasets.yaml"):
-    config = load_yaml(config_path)
-    
-    # 1. Automated Ingestion & Normalization
-    raw_samples = DatasetRegistry.ingest_all(config['datasets'])
-    
-    # 2. Assign Ground-Truth Labels via Evaluation
-    evaluated_samples = []
-    for sample in raw_samples:
-        winner = simulate_llm_evaluation(sample)
-        sample.provider_label = winner
-        evaluated_samples.append(sample)
+class DatasetGenerator:
+    """Class interface for dataset generation pipeline."""
+    def __init__(self, config_path: str = "configs/datasets.yaml"):
+        self.config_path = config_path
+        self.config = load_yaml(config_path)
+
+    def run(self) -> str:
+        # 1. Automated Ingestion & Normalization
+        raw_samples = DatasetRegistry.ingest_all(self.config.get('datasets', []))
         
-    # 3. Save as JSONL (ULab standard format)
-    out_path = config['output_path']
-    with open(out_path, 'w') as f:
-        for s in evaluated_samples:
-            f.write(json.dumps({"query": s.query, "provider": s.provider_label}) + "\n")
-    print(f"Generated {len(evaluated_samples)} routing samples at {out_path}")
+        # 2. Assign Ground-Truth Labels via Evaluation
+        evaluated_samples = []
+        for sample in raw_samples:
+            sample.provider_label = simulate_llm_evaluation(sample)
+            evaluated_samples.append(sample)
+            
+        # 3. Resolve path and ensure parent directories exist
+        out_path = self.config.get('output_path', 'data/processed/routing_dataset.jsonl')
+        os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+
+        # 4. Save as JSONL
+        with open(out_path, 'w', encoding="utf-8") as f:
+            for s in evaluated_samples:
+                f.write(json.dumps({"query": s.query, "provider": s.provider_label}) + "\n")
+                
+        print(f"Generated {len(evaluated_samples)} routing samples at {out_path}")
+        return out_path
+
+def generate_routing_data(config_path: str = "configs/datasets.yaml") -> str:
+    """Functional wrapper for DatasetGenerator."""
+    generator = DatasetGenerator(config_path=config_path)
+    return generator.run()

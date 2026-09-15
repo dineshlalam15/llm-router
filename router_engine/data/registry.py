@@ -1,6 +1,7 @@
-from datasets import load_dataset
+import os
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
-from typing import List, Optional
+from datasets import load_dataset
 
 @dataclass
 class NormalizedSample:
@@ -8,30 +9,62 @@ class NormalizedSample:
     domain: str
     provider_label: Optional[str] = None
 
-class DatasetLoader:
-    def __init__(self, config: dict):
+class DatasetAdapter:
+    def __init__(self, config: Dict[str, Any]):
         self.config = config
 
     def load_and_normalize(self) -> List[NormalizedSample]:
-        print(f"Downloading/Loading {self.config['name']} from Hugging Face...")
-        ds = load_dataset(self.config['name'], split=self.config['split'], cache_dir="data/cache")
-        
-        # Shuffle and sample
-        ds = ds.shuffle(seed=42).select(range(min(self.config['sample_size'], len(ds))))
-        
+        dataset_name = self.config['name']
+        config_name = self.config.get('config_name', None)
+        split = self.config.get('split', 'train')
+        text_column = self.config.get('text_column', 'text')
+        domain = self.config.get('domain', 'general')
+        sample_size = self.config.get('sample_size', 100)
+        filter_keywords = self.config.get('filter_keywords', [])
+        category_filter = self.config.get('category_filter', None)
+
+        print(f"📥 Loading dataset: {dataset_name}" + (f" ({config_name})" if config_name else ""))
+
+        # FIX: Pass config_name if specified for datasets like GSM8K
+        if config_name:
+            ds = load_dataset(dataset_name, config_name, split=split, cache_dir="data/cache")
+        else:
+            ds = load_dataset(dataset_name, split=split, cache_dir="data/cache")
+
+        # Category filtering (e.g. AG News)
+        if category_filter:
+            col = category_filter['column']
+            val = category_filter['value']
+            ds = ds.filter(lambda x: x[col] == val)
+
+        # Keyword filtering
+        if filter_keywords:
+            def matches_keywords(example):
+                txt = str(example.get(text_column, "")).lower()
+                return any(kw.lower() in txt for kw in filter_keywords)
+            ds = ds.filter(matches_keywords)
+
+        # Shuffle and downsample
+        ds = ds.shuffle(seed=42)
+        if len(ds) > sample_size:
+            ds = ds.select(range(sample_size))
+
         samples = []
         for row in ds:
-            text = row.get(self.config['text_column'])
-            if text and len(text.strip()) > 10:
-                samples.append(NormalizedSample(query=text, domain=self.config['domain']))
+            query_text = str(row.get(text_column, "")).strip()
+            if query_text:
+                samples.append(NormalizedSample(query=query_text, domain=domain))
+
         return samples
 
 class DatasetRegistry:
     @staticmethod
-    def ingest_all(datasets_config: list) -> List[NormalizedSample]:
+    def ingest_all(dataset_configs: List[Dict[str, Any]]) -> List[NormalizedSample]:
         all_samples = []
-        for ds_cfg in datasets_config:
-            if ds_cfg.get("enabled", False):
-                loader = DatasetLoader(ds_cfg)
-                all_samples.extend(loader.load_and_normalize())
+        for cfg in dataset_configs:
+            if not cfg.get('enabled', True):
+                continue
+            adapter = DatasetAdapter(cfg)
+            samples = adapter.load_and_normalize()
+            all_samples.extend(samples)
         return all_samples
