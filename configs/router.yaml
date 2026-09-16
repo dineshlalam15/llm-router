@@ -11,7 +11,7 @@ routing:
   primary: "svm"
   fallback_model: "knn"
   confidence_threshold: 0.65
-  default_provider: "litellm"
+  # Default fallback provider and model are loaded from .env (DEFAULT_PROVIDER, DEFAULT_MODEL)
 
 persistence:
   model_dir: "models_out/"

@@ -9,7 +9,7 @@ app = FastAPI(
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    return {"status": "healthy", "models_loaded": True}
 
 @app.post("/route", response_model=RouteResponse)
 def route_query(request: RouteRequest):

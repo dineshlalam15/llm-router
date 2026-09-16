@@ -3,8 +3,10 @@
 .env.*
 !.env.example
 
-# Machine Learning Artifacts
+# Machine Learning Artifacts & Data
 model/
+models_out/
+data/
 *.joblib
 *.pkl
 *.h5

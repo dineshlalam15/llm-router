@@ -1,58 +1,78 @@
 import os
 import json
 import yaml
-from typing import List
+from typing import List, Optional
 from .registry import DatasetRegistry, NormalizedSample
+from router_engine.models.catalog import ModelCatalog
+from router_engine.eval.profile_matcher import ProfileMatcher
 
 def load_yaml(path: str) -> dict:
     with open(path, 'r', encoding="utf-8") as f:
         return yaml.safe_load(f)
 
-def simulate_llm_evaluation(sample: NormalizedSample) -> str:
-    query_lower = sample.query.lower()
-    
-    # 1. Multimodal / Visual / Analytics / Charts -> Gemini
-    if any(k in query_lower for k in ["image", "visual", "dashboard", "chart", "graph", "trend", "report", "metric"]):
-        return "gemini"
-    # 2. Fast / Short / Customer Sentiment -> OpenAI
-    elif sample.domain in ["customer_sentiment", "customer_support"] or len(query_lower) < 80:
-        return "openai"
-    # 3. Long Context / Deep Strategy / Reasoning -> Claude
-    elif len(query_lower) > 200 or any(k in query_lower for k in ["strategy", "analyze", "campaign", "repositioning"]):
-        return "claude"
-    # 4. Fallback -> LiteLLM
-    else:
-        return "litellm"
-
 class DatasetGenerator:
-    """Class interface for dataset generation pipeline."""
-    def __init__(self, config_path: str = "configs/datasets.yaml"):
+    """
+    Generates the routing training dataset by ingesting benchmark queries
+    and evaluating them against the market LLM profiles catalog.
+    """
+    def __init__(
+        self,
+        config_path: str = "configs/datasets.yaml",
+        catalog_path: str = "configs/models_catalog.yaml"
+    ):
         self.config_path = config_path
         self.config = load_yaml(config_path)
+        self.catalog_path = catalog_path
+        self.catalog = ModelCatalog(catalog_path)
+        self.matcher = ProfileMatcher(catalog=self.catalog)
 
     def run(self) -> str:
-        # 1. Automated Ingestion & Normalization
+        # 1. Ingest raw benchmark queries from Hugging Face
+        print("📥 Ingesting benchmark queries from configured datasets...")
         raw_samples = DatasetRegistry.ingest_all(self.config.get('datasets', []))
-        
-        # 2. Assign Ground-Truth Labels via Evaluation
-        evaluated_samples = []
+        print(f"📊 Ingested {len(raw_samples)} raw benchmark samples.")
+
+        # 2. Evaluate against market LLM catalog profiles
+        print("🧠 Evaluating queries against market LLM profiles (capabilities, latency, pricing)...")
+        evaluated_records = []
         for sample in raw_samples:
-            sample.provider_label = simulate_llm_evaluation(sample)
-            evaluated_samples.append(sample)
-            
-        # 3. Resolve path and ensure parent directories exist
-        out_path = self.config.get('output_path', 'data/processed/routing_dataset.jsonl')
+            eval_result = self.matcher.evaluate(
+                query=sample.query,
+                domain=sample.domain
+            )
+            sample.provider_label = eval_result["provider"]
+            sample.optimal_model = eval_result["optimal_model"]
+            sample.candidate_evals = eval_result["candidate_scores"]
+
+            record = {
+                "query": sample.query,
+                "provider": sample.provider_label,
+                "model": sample.optimal_model,
+                "domain": sample.domain,
+                "selection_reason": eval_result["selection_reason"],
+                "model_profile": eval_result["model_profile"],
+                "candidate_scores": eval_result["candidate_scores"]
+            }
+            evaluated_records.append(record)
+
+        # 3. Resolve destination path and ensure directories exist
+        out_path = self.config.get('pipeline_settings', {}).get(
+            'output_routing_dataset', 'data/processed/routing_dataset.jsonl'
+        )
         os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
 
-        # 4. Save as JSONL
+        # 4. Save formatted JSONL
         with open(out_path, 'w', encoding="utf-8") as f:
-            for s in evaluated_samples:
-                f.write(json.dumps({"query": s.query, "provider": s.provider_label}) + "\n")
-                
-        print(f"Generated {len(evaluated_samples)} routing samples at {out_path}")
+            for rec in evaluated_records:
+                f.write(json.dumps(rec) + "\n")
+
+        print(f"✅ Generated {len(evaluated_records)} profile-evaluated routing samples at {out_path}")
         return out_path
 
-def generate_routing_data(config_path: str = "configs/datasets.yaml") -> str:
+def generate_routing_data(
+    config_path: str = "configs/datasets.yaml",
+    catalog_path: str = "configs/models_catalog.yaml"
+) -> str:
     """Functional wrapper for DatasetGenerator."""
-    generator = DatasetGenerator(config_path=config_path)
+    generator = DatasetGenerator(config_path=config_path, catalog_path=catalog_path)
     return generator.run()

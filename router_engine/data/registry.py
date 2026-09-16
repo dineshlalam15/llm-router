@@ -5,27 +5,38 @@ from datasets import load_dataset
 
 @dataclass
 class NormalizedSample:
+    """
+    Normalized Sample: A Structured data container
+        1. query: The actual question. 
+        2. domain: The category/topic the query falls into. 
+        3. provider_label: Brand Provider of the model (openai, claude etc.)
+        4. optimal_model: Final model that is chosen. 
+        5. candidate_evals: Mathematical breakdown of the scores for all the models. 
+    """
     query: str
     domain: str
     provider_label: Optional[str] = None
+    optimal_model: Optional[str] = None
+    candidate_evals: Optional[Dict[str, Any]] = None
 
 class DatasetAdapter:
     def __init__(self, config: Dict[str, Any]):
         self.config = config
 
     def load_and_normalize(self) -> List[NormalizedSample]:
+        domain = self.config.get('domain', 'general')
+        sample_size = self.config.get('sample_size', 100)
+
         dataset_name = self.config['name']
         config_name = self.config.get('config_name', None)
         split = self.config.get('split', 'train')
         text_column = self.config.get('text_column', 'text')
-        domain = self.config.get('domain', 'general')
-        sample_size = self.config.get('sample_size', 100)
         filter_keywords = self.config.get('filter_keywords', [])
         category_filter = self.config.get('category_filter', None)
 
         print(f"📥 Loading dataset: {dataset_name}" + (f" ({config_name})" if config_name else ""))
 
-        # FIX: Pass config_name if specified for datasets like GSM8K
+        # Pass config_name if specified for datasets like GSM8K
         if config_name:
             ds = load_dataset(dataset_name, config_name, split=split, cache_dir="data/cache")
         else:

@@ -1,0 +1,189 @@
+# Market LLM Catalog
+# Comprehensive catalog of modern LLM models with capabilities, pricing, latency,
+# max context, and suitable task descriptions.
+
+models:
+  - id: "claude-3-5-sonnet"
+    name: "Claude 3.5 Sonnet"
+    provider: "claude"
+    company: "Anthropic"
+    pricing:
+      input_per_million: 3.00
+      output_per_million: 15.00
+      tier: "premium"
+    latency:
+      tier: "moderate"
+      typical_ms: 750
+    context:
+      max_input_tokens: 200000
+      max_output_tokens: 8192
+    multimodal: true
+    suitable_tasks: "Complex multi-step reasoning, architectural system design, advanced code generation, deep strategy, nuanced creative and corporate copywriting, complex long-document synthesis"
+    strengths:
+      - "deep_strategy"
+      - "advanced_coding"
+      - "long_context_analysis"
+      - "architectural_design"
+      - "nuanced_copywriting"
+      - "persuasive_writing"
+    best_domains:
+      - "marketing_copywriting"
+      - "business_strategy"
+      - "advanced_reasoning"
+
+  - id: "gpt-4o"
+    name: "GPT-4o"
+    provider: "openai"
+    company: "OpenAI"
+    pricing:
+      input_per_million: 2.50
+      output_per_million: 10.00
+      tier: "premium"
+    latency:
+      tier: "fast"
+      typical_ms: 550
+    context:
+      max_input_tokens: 128000
+      max_output_tokens: 4096
+    multimodal: true
+    suitable_tasks: "Complex STEM and mathematical word problems, algorithmic logic, multi-modal reasoning, structured JSON data extraction, function calling, tool use"
+    strengths:
+      - "mathematics"
+      - "stem_reasoning"
+      - "structured_json"
+      - "function_calling"
+      - "algorithmic_logic"
+    best_domains:
+      - "metrics_reasoning"
+      - "utility_coding"
+      - "structured_data"
+
+  - id: "gpt-4o-mini"
+    name: "GPT-4o Mini"
+    provider: "openai"
+    company: "OpenAI"
+    pricing:
+      input_per_million: 0.15
+      output_per_million: 0.60
+      tier: "economy"
+    latency:
+      tier: "ultra_fast"
+      typical_ms: 220
+    context:
+      max_input_tokens: 128000
+      max_output_tokens: 4096
+    multimodal: true
+    suitable_tasks: "High-volume customer support inquiries, customer sentiment analysis, short conversational dialogues, intent classification, refunds, orders, and lightweight summarization"
+    strengths:
+      - "customer_support"
+      - "sentiment_analysis"
+      - "fast_classification"
+      - "conversational_dialogue"
+      - "cost_efficiency"
+    best_domains:
+      - "customer_support"
+      - "customer_sentiment"
+      - "short_inquiries"
+
+  - id: "gemini-1-5-pro"
+    name: "Gemini 1.5 Pro"
+    provider: "gemini"
+    company: "Google"
+    pricing:
+      input_per_million: 1.25
+      output_per_million: 5.00
+      tier: "balanced"
+    latency:
+      tier: "moderate"
+      typical_ms: 700
+    context:
+      max_input_tokens: 2000000
+      max_output_tokens: 8192
+    multimodal: true
+    suitable_tasks: "Massive context analysis up to 2M tokens, multimodal audio/video/image processing, complex analytics dashboards, market trend reports, charts, and financial graphics"
+    strengths:
+      - "massive_context"
+      - "multimodal_vision"
+      - "analytics_dashboards"
+      - "charts_and_graphs"
+      - "trend_forecasting"
+      - "video_analysis"
+    best_domains:
+      - "data_analytics"
+      - "visual_reporting"
+      - "multimodal_vision"
+
+  - id: "gemini-1-5-flash"
+    name: "Gemini 1.5 Flash"
+    provider: "gemini"
+    company: "Google"
+    pricing:
+      input_per_million: 0.075
+      output_per_million: 0.30
+      tier: "economy"
+    latency:
+      tier: "ultra_fast"
+      typical_ms: 180
+    context:
+      max_input_tokens: 1000000
+      max_output_tokens: 8192
+    multimodal: true
+    suitable_tasks: "High-speed multimodal parsing, quick image OCR, visual question answering, low-cost document parsing, real-time streaming summaries"
+    strengths:
+      - "fast_multimodal"
+      - "ocr_extraction"
+      - "streaming_processing"
+      - "low_cost"
+    best_domains:
+      - "fast_vision"
+      - "streaming_multimodal"
+
+  - id: "llama-3-1-70b-instruct"
+    name: "Llama 3.1 70B Instruct"
+    provider: "litellm"
+    company: "Meta / Open Source"
+    pricing:
+      input_per_million: 0.59
+      output_per_million: 0.79
+      tier: "balanced"
+    latency:
+      tier: "fast"
+      typical_ms: 380
+    context:
+      max_input_tokens: 128000
+      max_output_tokens: 4096
+    multimodal: false
+    suitable_tasks: "High-capability open-weights reasoning, general code generation, summarization, self-hosted and privacy-compliant workloads"
+    strengths:
+      - "general_reasoning"
+      - "open_weights"
+      - "coding"
+      - "privacy_safe"
+    best_domains:
+      - "utility_coding"
+      - "general_knowledge"
+
+  - id: "llama-3-1-8b-instruct"
+    name: "Llama 3.1 8B Instruct"
+    provider: "litellm"
+    company: "Meta / Open Source"
+    pricing:
+      input_per_million: 0.05
+      output_per_million: 0.08
+      tier: "economy"
+    latency:
+      tier: "ultra_fast"
+      typical_ms: 110
+    context:
+      max_input_tokens: 128000
+      max_output_tokens: 2048
+    multimodal: false
+    suitable_tasks: "Ultra-low latency utility scripts, simple regex, small formatting transformations, embedded edge devices, short questions"
+    strengths:
+      - "ultra_low_latency"
+      - "lowest_cost"
+      - "simple_transformations"
+      - "edge_friendly"
+    best_domains:
+      - "lightweight_utility"
+      - "simple_qa"

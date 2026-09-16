@@ -7,11 +7,12 @@ pipeline_settings:
   random_seed: 42
   embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
 
-# -------------------------------------------------------------------------
+
 # 80/20 Dataset Ingestion Mix:
 # 80% Domain-Specific Marketing / Business / Sentiment
 # 20% General Reasoning / Code / Math Anchors
-# -------------------------------------------------------------------------
+
+
 
 datasets:
   # 1. Marketing Copy, Ad Briefs & Campaign Prompts
@@ -40,7 +41,7 @@ datasets:
     text_column: "text"
     domain: "customer_sentiment"
     sample_size: 200
-    filter_keywords: []  # Ingest balanced random sample directly
+    filter_keywords: [] 
 
   # 3. Customer Service, E-commerce, Inquiries & Escalations
   - name: "Kaludi/Customer-Support-Responses"
@@ -86,5 +87,5 @@ datasets:
     split: "train"
     text_column: "question"
     domain: "metrics_reasoning"
-    sample_size: 60
+    sample_size: 100
     filter_keywords: []

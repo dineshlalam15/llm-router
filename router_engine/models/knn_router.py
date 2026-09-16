@@ -43,12 +43,12 @@ class KNNRouter:
         classes = self.model.classes_
 
         best_idx = int(np.argmax(probs))
-        predicted_provider = str(classes[best_idx])
+        predicted_model = str(classes[best_idx])
         confidence = float(probs[best_idx])
         
         prob_dict = {str(classes[i]): round(float(probs[i]), 4) for i in range(len(classes))}
 
-        return predicted_provider, confidence, prob_dict
+        return predicted_model, confidence, prob_dict
 
     def find_nearest_examples(self, query_embedding: Union[np.ndarray, List[float]], k: int = 3) -> List[Dict[str, Any]]:
         """Retrieves nearest neighbor distances and metadata."""

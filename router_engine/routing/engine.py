@@ -1,9 +1,12 @@
 import os
 import yaml
 from typing import Dict, Any
+from dotenv import load_dotenv
 from router_engine.models.embeddings import Embedder
 from router_engine.models.svm_router import SVMRouter
 from router_engine.models.knn_router import KNNRouter
+
+load_dotenv()
 
 class DynamicRouter:
     def __init__(self, config_path: str = "configs/router.yaml"):
@@ -36,19 +39,20 @@ class DynamicRouter:
         Query -> Dense Vector -> SVM -> (if low confidence) -> KNN -> (if low confidence) -> Default Gateway
         """
         query_clean = query.strip()
-        threshold = float(self.config.get("routing", {}).get("confidence_threshold", 0.65))
-        default_provider = self.config.get("routing", {}).get("default_provider", "litellm")
+        threshold = float(os.getenv("CONFIDENCE_THRESHOLD") or self.config.get("routing", {}).get("confidence_threshold", 0.65))
+        default_model = os.getenv("DEFAULT_MODEL") or os.getenv("FALLBACK_MODEL") or "gpt-4o-mini"
+        default_provider = os.getenv("DEFAULT_PROVIDER") or os.getenv("FALLBACK_PROVIDER") or "openai"
 
         # Step 1: Compute dense embedding
         query_emb = self.embedder.encode([query_clean])[0]
 
-        # Step 2: Primary Prediction via SVM
-        svm_provider, svm_conf, svm_probs = self.svm.predict([query_emb])
+        # Step 2: Primary Prediction via SVM on Model Targets
+        svm_model, svm_conf, svm_probs = self.svm.predict([query_emb])
 
         if svm_conf >= threshold:
             return {
                 "query": query,
-                "provider": svm_provider,
+                "model": svm_model,
                 "confidence": round(svm_conf, 4),
                 "method": "svm_primary",
                 "probabilities": svm_probs,
@@ -56,24 +60,25 @@ class DynamicRouter:
             }
 
         # Step 3: Fallback 1 -> KNN Similarity Routing
-        knn_provider, knn_conf, knn_probs = self.knn.predict(query_emb)
+        knn_model, knn_conf, knn_probs = self.knn.predict(query_emb)
 
         if knn_conf >= threshold:
             return {
                 "query": query,
-                "provider": knn_provider,
+                "model": knn_model,
                 "confidence": round(knn_conf, 4),
                 "method": "knn_fallback",
                 "probabilities": knn_probs,
                 "fallback_triggered": True
             }
 
-        # Step 4: Fallback 2 -> Default Master Proxy / Gateway
+        # Step 4: Fallback 2 -> Default Master Model Fallback
         return {
             "query": query,
+            "model": default_model,
             "provider": default_provider,
             "confidence": round(svm_conf, 4),
-            "method": "default_gateway_fallback",
+            "method": "default_model_fallback",
             "probabilities": svm_probs,
             "fallback_triggered": True
         }
