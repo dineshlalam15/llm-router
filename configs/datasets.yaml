@@ -15,9 +15,68 @@ pipeline_settings:
 
 
 datasets:
-  # 1. Marketing Copy, Ad Briefs & Campaign Prompts
+  # 1. Direct Empirical Human Preference Battles (Real Human Decision Winners)
+  - name: "lmsys/lmsys-arena-human-preference-55k"
+    enabled: true
+    ingestion_mode: "direct_preference"
+    split: "train"
+    sample_size: 300
+    domain: "general_reasoning"
+    prompt_column: "prompt"
+    model_a_column: "model_a"
+    model_b_column: "model_b"
+    winner_a_column: "winner_model_a"
+    winner_b_column: "winner_model_b"
+    winner_tie_column: "winner_tie"
+    model_mapping:
+      "gpt-4-1106-preview": "gpt-4o"
+      "gpt-4-0613": "gpt-4o"
+      "gpt-4-0314": "gpt-4o"
+      "gpt-4-turbo": "gpt-4o"
+      "gpt-4": "gpt-4o"
+      "gpt-3.5-turbo-0613": "gpt-4o-mini"
+      "gpt-3.5-turbo-0125": "gpt-4o-mini"
+      "gpt-3.5-turbo-1106": "gpt-4o-mini"
+      "gpt-3.5-turbo": "gpt-4o-mini"
+      "claude-3-5-sonnet-20240620": "claude-3-5-sonnet"
+      "claude-3-opus-20240229": "claude-3-5-sonnet"
+      "claude-2.1": "claude-3-5-sonnet"
+      "claude-2.0": "claude-3-5-sonnet"
+      "claude-3-haiku-20240307": "gpt-4o-mini"
+      "gemini-1.5-pro-api-0514": "gemini-1-5-pro"
+      "gemini-1.5-pro": "gemini-1-5-pro"
+      "gemini-pro": "gemini-1-5-pro"
+      "gemini-1.5-flash-api-0514": "gemini-1-5-flash"
+      "gemini-1.5-flash": "gemini-1-5-flash"
+      "llama-3-70b-instruct": "llama-3-1-70b-instruct"
+      "llama-2-70b-chat": "llama-3-1-70b-instruct"
+      "llama-3-8b-instruct": "llama-3-1-8b-instruct"
+      "llama-2-13b-chat": "llama-3-1-8b-instruct"
+      "llama-2-7b-chat": "llama-3-1-8b-instruct"
+      "mistral-7b-instruct-v0.2": "llama-3-1-8b-instruct"
+      "mixtral-8x7b-instruct-v0.1": "llama-3-1-70b-instruct"
+
+  # RouteLLM Pairwise Battle Dataset (LMSYS & UC Berkeley Benchmark)
+  - name: "routellm/gpt4_judge_battles"
+    enabled: true
+    ingestion_mode: "direct_preference"
+    split: "train"
+    sample_size: 300
+    domain: "general_reasoning"
+    prompt_column: "prompt"
+    model_a_column: "model_a"
+    model_b_column: "model_b"
+    winner_a_column: "winner_model_a"
+    winner_b_column: "winner_model_b"
+    winner_tie_column: "winner_tie"
+    model_mapping:
+      "gpt-4-1106-preview": "gpt-4o"
+      "mixtral-8x7b-instruct-v0.1": "llama-3-1-70b-instruct"
+
+  # 2. Marketing Copy, Ad Briefs & Campaign Prompts
   - name: "fka/awesome-chatgpt-prompts"
     enabled: true
+    ingestion_mode: "profile_matched"
     split: "train"
     text_column: "prompt"
     domain: "marketing_copywriting"
@@ -34,18 +93,20 @@ datasets:
       - "tagline"
       - "email"
 
-  # 2. Customer Feedback, Tone & Sentiment Analysis
+  # 3. Customer Feedback, Tone & Sentiment Analysis
   - name: "dair-ai/emotion"
     enabled: true
+    ingestion_mode: "profile_matched"
     split: "train"
     text_column: "text"
     domain: "customer_sentiment"
     sample_size: 200
     filter_keywords: [] 
 
-  # 3. Customer Service, E-commerce, Inquiries & Escalations
+  # 4. Customer Service, E-commerce, Inquiries & Escalations
   - name: "Kaludi/Customer-Support-Responses"
     enabled: true
+    ingestion_mode: "profile_matched"
     split: "train"
     text_column: "query"
     domain: "customer_support"
@@ -59,9 +120,10 @@ datasets:
       - "price"
       - "service"
 
-  # 4. Market Research, Business Analysis & Financial News
+  # 5. Market Research, Business Analysis & Financial News
   - name: "ag_news"
     enabled: true
+    ingestion_mode: "profile_matched"
     split: "train"
     text_column: "text"
     domain: "business_strategy"
@@ -71,19 +133,21 @@ datasets:
       column: "label"
       value: 2
 
-  # 5. Technical Utility & Marketing Automation Scripts (Anchor)
+  # 6. Technical Utility & Marketing Automation Scripts (Anchor)
   - name: "openai/openai_humaneval"
     enabled: true
+    ingestion_mode: "profile_matched"
     split: "test"
     text_column: "prompt"
     domain: "utility_coding"
     sample_size: 60
     filter_keywords: []
 
-  # 6. Quantitative Marketing Metrics / ROI Word Problems (Anchor)
+  # 7. Quantitative Marketing Metrics / ROI Word Problems (Anchor)
   - name: "openai/gsm8k"
     config_name: "main"
     enabled: true
+    ingestion_mode: "profile_matched"
     split: "train"
     text_column: "question"
     domain: "metrics_reasoning"

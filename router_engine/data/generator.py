@@ -36,24 +36,40 @@ class DatasetGenerator:
         print("🧠 Evaluating queries against market LLM profiles (capabilities, latency, pricing)...")
         evaluated_records = []
         for sample in raw_samples:
-            eval_result = self.matcher.evaluate(
-                query=sample.query,
-                domain=sample.domain
-            )
-            sample.provider_label = eval_result["provider"]
-            sample.optimal_model = eval_result["optimal_model"]
-            sample.candidate_evals = eval_result["candidate_scores"]
+            if sample.optimal_model:
+                # Direct Empirical Preference (Human Battle Winner)
+                profile = self.catalog.get(sample.optimal_model)
+                prov = profile.provider if profile else "openai"
+                record = {
+                    "query": sample.query,
+                    "provider": prov,
+                    "model": sample.optimal_model,
+                    "domain": sample.domain,
+                    "selection_reason": f"Empirically determined winner ({sample.optimal_model}) from human preference battle dataset.",
+                    "model_profile": profile.to_dict() if profile else {},
+                    "candidate_scores": {}
+                }
+                evaluated_records.append(record)
+            else:
+                # Profile-Matched Evaluation
+                eval_result = self.matcher.evaluate(
+                    query=sample.query,
+                    domain=sample.domain
+                )
+                sample.provider_label = eval_result["provider"]
+                sample.optimal_model = eval_result["optimal_model"]
+                sample.candidate_evals = eval_result["candidate_scores"]
 
-            record = {
-                "query": sample.query,
-                "provider": sample.provider_label,
-                "model": sample.optimal_model,
-                "domain": sample.domain,
-                "selection_reason": eval_result["selection_reason"],
-                "model_profile": eval_result["model_profile"],
-                "candidate_scores": eval_result["candidate_scores"]
-            }
-            evaluated_records.append(record)
+                record = {
+                    "query": sample.query,
+                    "provider": sample.provider_label,
+                    "model": sample.optimal_model,
+                    "domain": sample.domain,
+                    "selection_reason": eval_result["selection_reason"],
+                    "model_profile": eval_result["model_profile"],
+                    "candidate_scores": eval_result["candidate_scores"]
+                }
+                evaluated_records.append(record)
 
         # 3. Resolve destination path and ensure directories exist
         out_path = self.config.get('pipeline_settings', {}).get(

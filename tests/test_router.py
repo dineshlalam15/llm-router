@@ -80,3 +80,29 @@ def test_dynamic_router_engine_fallback(monkeypatch):
     assert res["provider"] == "custom-provider"
     assert res["method"] == "default_model_fallback"
 
+def test_direct_preference_adapter():
+    """Verifies that DatasetAdapter correctly normalizes prompts and maps external models."""
+    from router_engine.data.registry import DatasetAdapter
+
+    cfg = {
+        "name": "test_dataset",
+        "ingestion_mode": "direct_preference",
+        "model_mapping": {
+            "gpt-4-1106-preview": "gpt-4o",
+            "claude-3-opus": "claude-3-5-sonnet",
+            "llama-3-8b": "llama-3-1-8b-instruct"
+        }
+    }
+    adapter = DatasetAdapter(cfg)
+
+    # Test prompt normalization
+    assert adapter._normalize_prompt('["What is machine learning?"]') == "What is machine learning?"
+    assert adapter._normalize_prompt(["Tell me a joke."]) == "Tell me a joke."
+    assert adapter._normalize_prompt("Simple string query") == "Simple string query"
+
+    # Test model resolution
+    assert adapter._map_model("gpt-4-1106-preview", cfg["model_mapping"]) == "gpt-4o"
+    assert adapter._map_model("claude-3-opus-20240229", cfg["model_mapping"]) == "claude-3-5-sonnet"
+    assert adapter._map_model("unknown-old-model-xyz", cfg["model_mapping"]) is None
+
+

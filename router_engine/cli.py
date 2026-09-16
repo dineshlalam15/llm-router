@@ -147,6 +147,24 @@ def train_pipeline(
 
     print(f"✅ Saved model-level SVM, KNN, and model metadata to '{model_dir}'")
 
+def route_query_pipeline(query: str):
+    from router_engine.routing.engine import DynamicRouter
+    router = DynamicRouter()
+    res = router.route(query)
+    print("\n🎯 Routing Decision:")
+    print(f"   Query:               {res['query']}")
+    print(f"   Optimal Model:       {res['model']}")
+    print(f"   Provider:            {res['provider']}")
+    print(f"   Confidence Score:    {res['confidence']:.4f}")
+    print(f"   Routing Method:      {res['method']}")
+    print(f"   Fallback Triggered:  {res['fallback_triggered']}")
+    if "probabilities" in res and res["probabilities"]:
+        print("\n📊 Top Model Probabilities:")
+        sorted_probs = sorted(res["probabilities"].items(), key=lambda x: x[1], reverse=True)
+        for m, p in sorted_probs[:5]:
+            print(f"   - {m:25s}: {p:.4f}")
+    print()
+
 def main():
     parser = argparse.ArgumentParser(description="LLM Router CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -162,12 +180,18 @@ def main():
     train_parser.add_argument("--dataset-config", type=str, default="configs/datasets.yaml", help="Path to datasets config")
     train_parser.add_argument("--catalog", type=str, default="configs/models_catalog.yaml", help="Path to models catalog config")
 
+    # Subcommand: route
+    route_parser = subparsers.add_parser("route", help="Evaluate and route a user query directly from CLI")
+    route_parser.add_argument("query", type=str, help="Prompt or query to evaluate")
+
     args = parser.parse_args()
 
     if args.command == "generate-data":
         generate_data_pipeline(args.config, args.catalog)
     elif args.command == "train":
         train_pipeline(args.config, args.dataset_config, args.catalog)
+    elif args.command == "route":
+        route_query_pipeline(args.query)
 
 if __name__ == "__main__":
     main()

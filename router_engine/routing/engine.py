@@ -33,6 +33,17 @@ class DynamicRouter:
         self.svm.load(svm_path)
         self.knn.load(knn_path)
 
+        # 4. Load metadata for provider mapping
+        meta_path = os.path.join(model_dir, "model_metadata.json")
+        self.model_metadata = {}
+        if os.path.exists(meta_path):
+            try:
+                import json
+                with open(meta_path, "r", encoding="utf-8") as f:
+                    self.model_metadata = json.load(f)
+            except Exception:
+                self.model_metadata = {}
+
     def route(self, query: str) -> Dict[str, Any]:
         """
         Executes the hierarchical routing pipeline:
@@ -42,6 +53,11 @@ class DynamicRouter:
         threshold = float(os.getenv("CONFIDENCE_THRESHOLD") or self.config.get("routing", {}).get("confidence_threshold", 0.65))
         default_model = os.getenv("DEFAULT_MODEL") or os.getenv("FALLBACK_MODEL") or "gpt-4o-mini"
         default_provider = os.getenv("DEFAULT_PROVIDER") or os.getenv("FALLBACK_PROVIDER") or "openai"
+
+        def _resolve_provider(mid: str) -> str:
+            if self.model_metadata and mid in self.model_metadata:
+                return self.model_metadata[mid].get("provider", default_provider)
+            return default_provider
 
         # Step 1: Compute dense embedding
         query_emb = self.embedder.encode([query_clean])[0]
@@ -53,6 +69,7 @@ class DynamicRouter:
             return {
                 "query": query,
                 "model": svm_model,
+                "provider": _resolve_provider(svm_model),
                 "confidence": round(svm_conf, 4),
                 "method": "svm_primary",
                 "probabilities": svm_probs,
@@ -66,6 +83,7 @@ class DynamicRouter:
             return {
                 "query": query,
                 "model": knn_model,
+                "provider": _resolve_provider(knn_model),
                 "confidence": round(knn_conf, 4),
                 "method": "knn_fallback",
                 "probabilities": knn_probs,
@@ -76,7 +94,7 @@ class DynamicRouter:
         return {
             "query": query,
             "model": default_model,
-            "provider": default_provider,
+            "provider": _resolve_provider(default_model),
             "confidence": round(svm_conf, 4),
             "method": "default_model_fallback",
             "probabilities": svm_probs,
