@@ -13,6 +13,8 @@ class NormalizedSample:
         2. domain: The category/topic the query falls into. 
         3. provider_label: Brand Provider of the model (openai, claude etc.)
         4. optimal_model: Final model that is chosen. 
+            direct_preference datasets: Fetched directly from the datasets. 
+            profile_matched: Left as 'None', as they need to be profile matched later. 
         5. candidate_evals: Mathematical breakdown of the scores for all the models. 
     """
     query: str
@@ -26,7 +28,14 @@ class DatasetAdapter:
         self.config = config
 
     def _normalize_prompt(self, raw_prompt: Any) -> str:
-        """Extracts the first user turn from text, list, or serialized JSON."""
+        """
+        Extracts the first user turn from text, list, or serialized JSON.
+        Example: 
+            1. ["How do I fix this error?", "Now make it faster"]'
+            2. ["Hello world"]
+            3. "Hello world"
+        """
+
         if isinstance(raw_prompt, list):
             return str(raw_prompt[0]).strip() if raw_prompt else ""
         if isinstance(raw_prompt, str):
@@ -41,8 +50,11 @@ class DatasetAdapter:
             return raw_prompt
         return str(raw_prompt).strip()
 
+
     def _map_model(self, raw_name: str, model_mapping: Dict[str, str]) -> Optional[str]:
-        """Resolves raw model name to catalog model ID via exact or prefix matching."""
+        """
+        Resolves raw model name to catalog model ID via exact or prefix matching.
+        """
         if not raw_name:
             return None
         raw_clean = raw_name.strip()
@@ -64,7 +76,7 @@ class DatasetAdapter:
         config_name = self.config.get('config_name', None)
         split = self.config.get('split', 'train')
 
-        print(f"📥 Loading dataset: {dataset_name}" + (f" ({config_name})" if config_name else "") + f" [mode: {ingestion_mode}]")
+        print(f"Loading dataset: {dataset_name}" + (f" ({config_name})" if config_name else "") + f" [mode: {ingestion_mode}]")
 
         if config_name:
             ds = load_dataset(dataset_name, config_name, split=split, cache_dir="data/cache")
@@ -101,7 +113,12 @@ class DatasetAdapter:
 
                 query_text = self._normalize_prompt(row.get(prompt_col, ""))
                 if query_text and len(query_text) >= 5:
-                    samples.append(NormalizedSample(query=query_text, domain=domain, optimal_model=mapped_model))
+                    samples.append(NormalizedSample(
+                        query=query_text, 
+                        domain=domain, 
+                        optimal_model=mapped_model
+                        )
+                    )
                     if len(samples) >= sample_size:
                         break
 
@@ -131,7 +148,11 @@ class DatasetAdapter:
             for row in ds:
                 query_text = str(row.get(text_column, "")).strip()
                 if query_text:
-                    samples.append(NormalizedSample(query=query_text, domain=domain))
+                    samples.append(NormalizedSample(
+                        query=query_text, 
+                        domain=domain
+                        )
+                    )
 
             return samples
 

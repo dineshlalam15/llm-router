@@ -28,12 +28,12 @@ class DatasetGenerator:
 
     def run(self) -> str:
         # 1. Ingest raw benchmark queries from Hugging Face
-        print("📥 Ingesting benchmark queries from configured datasets...")
+        print("Ingesting benchmark queries from configured datasets...")
         raw_samples = DatasetRegistry.ingest_all(self.config.get('datasets', []))
-        print(f"📊 Ingested {len(raw_samples)} raw benchmark samples.")
+        print(f"Ingested {len(raw_samples)} raw benchmark samples.")
 
         # 2. Evaluate against market LLM catalog profiles
-        print("🧠 Evaluating queries against market LLM profiles (capabilities, latency, pricing)...")
+        print("Evaluating queries against market LLM profiles (capabilities, latency, pricing)...")
         evaluated_records = []
         for sample in raw_samples:
             if sample.optimal_model:

@@ -145,7 +145,7 @@ datasets:
 
   # 7. Quantitative Marketing Metrics / ROI Word Problems (Anchor)
   - name: "openai/gsm8k"
-    config_name: "main"
+    config_name: "main" #subset name. 
     enabled: true
     ingestion_mode: "profile_matched"
     split: "train"
